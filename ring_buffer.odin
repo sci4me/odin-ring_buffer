@@ -40,3 +40,30 @@ poll :: proc(using rb: ^RingBuffer($N, $T)) -> (T, bool) {
 
 	return result, true;
 }
+
+offer_many :: proc(using rb: ^RingBuffer($N, $T), values: []T) -> int {
+	free := N - size(rb);
+	if free == 0 do return 0;
+
+	n := min(free, len(values));
+	
+	for i in 0..<n {
+		data[write & (N - 1)] = values[i];
+		write += 1;
+	}
+
+	return n;
+}
+
+poll_many :: proc(using rb: ^RingBuffer($N, $T), buffer: ^[]T, offset: int, count: int) -> int {
+	if empty(rb) do return 0;
+
+	n := min(size(rb), count);
+
+	for i in 0..<n {
+		buffer[i + offset] = data[read & (N - 1)];
+		read += 1;
+	}
+
+	return n;
+}
