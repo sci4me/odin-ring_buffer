@@ -20,6 +20,11 @@ empty :: inline proc(using rb: ^RingBuffer($N, $T)) -> bool {
 	return size(rb) == 0;
 }
 
+clear :: proc(using rb: ^RingBuffer($N, $T)) {
+	read = 0;
+	write = 0;
+}
+
 offer :: proc(using rb: ^RingBuffer($N, $T), value: T) -> bool {
 	if full(rb) do return false;
 
